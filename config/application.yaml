@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:~/mydb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092   # Kafka broker(s)
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all                # ensure full commit before ack
+      retries: 3               # retry if send fails
+      properties:
+        linger.ms: 5           # small delay to batch messages
+
+    consumer:
+      group-id: quickstart-events
+      auto-offset-reset: earliest  # read from beginning if no offset stored
+      enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        max.poll.interval.ms: 300000
+        session.timeout.ms: 10000
+
+    listener:
+      ack-mode: record        # each record acknowledged (safe default)
+server:
+  port: 8081
